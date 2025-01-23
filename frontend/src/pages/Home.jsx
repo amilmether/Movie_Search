@@ -14,7 +14,10 @@ function Home(){
     return ( 
     <div className="home">
         <form onSubmit={handleSearch} className="search-form">
-            <input type="text" placeholder="Search for movies..." className="search-input"/>
+            <input type="text" 
+            placeholder="Search for movies..." 
+            className="search-input"/>
+            <button type='submit' className="search-button">Search</button>
         </form>
         <div className="movies-grid">
             {movies.map((movie) =>(
