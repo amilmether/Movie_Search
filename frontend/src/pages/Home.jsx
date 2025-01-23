@@ -1,22 +1,46 @@
 import MovieCard from "../components/MovieCard"
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import "../css/Home.css";
+import { searchMovies,getPopularMovies } from "../services/api";
+
 function Home(){
     const [searchQuery, setSearchQuery] = useState("");
-
-    const movies = [
-        {id: 1, title: "John Wick", release_date: "2020"},
-        {id: 2, title: "Terminator", release_date: "1999"},
-        {id: 3, title: "Pushpa 1", release_date: "2021"},
-        {id: 4, title: "Pushpa 2", release_date: "2024"},
-    ];
-
-    const handleSearch = (e) =>
+    const [movies, setMovies] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)                                 
+    useEffect(() => {
+        const loadpopularMovies = async () => {
+            try{
+                const popularMovies = await getPopularMovies()
+                setMovies(popularMovies)
+            }catch (err){
+                console.error(err)
+                setError("Failed to Load Movies")
+            }
+            finally {
+                setLoading(false)
+            }
+        }
+        loadpopularMovies()
+    },[])
+    const handleSearch = async (e) =>
     {
         e.preventDefault()
-        alert(searchQuery)
-        setSearchQuery("")
-    }
+        if (!searchQuery.trim()) return
+        if (loading) return
+        setLoading(true)
+
+        try{
+            const searchResults = await searchMovies(searchQuery)
+            setMovies(searchResults)
+            setError(null)
+        }catch(err){
+            console.error(err)
+            setError("Failed to Search Movies...")
+        }finally{
+            setLoading(false)
+        }
+    };
     return ( 
     <div className="home">
         <form onSubmit={handleSearch} className="search-form">
@@ -28,6 +52,9 @@ function Home(){
             />
             <button type='submit' className="search-button">Search</button>
         </form>
+        {error && <div className="error">{error}</div>}
+        {loading ? (<div className="Loading">Loading...</div>
+        ):(
         <div className="movies-grid">
             {movies.map(
             (movie) =>
@@ -35,6 +62,7 @@ function Home(){
                 <MovieCard movie={movie} key={movie.id} />
         ))}
         </div>
+        )}
     </div>
     );
 }
