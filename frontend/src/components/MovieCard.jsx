@@ -1,7 +1,7 @@
-
-export function MovieCard({movie}){
+import "../css/MovieCard.css";
+function MovieCard({movie}){
     function onFavoriteClick(){
-        alert("Favorite button clicked");
+        alert("clicked");
     }
     return <div className="movie-card">
         <div className="movie-poster">
